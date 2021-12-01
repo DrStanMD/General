@@ -1,0 +1,83 @@
+// ==UserScript==
+// @name Booking Screen Confirm MRP
+// @namespace   PMscripts
+// @description  Highlight if booking with non-MRP
+// @include     *appointment/addappointment.jsp*
+// @require   https://ajax.googleapis.com/ajax/libs/jquery/1.3.1/jquery.min.js
+// @version 1.0
+// ==/UserScript==
+
+
+booking = $('div.title').html();
+booking = booking.substr(booking.indexOf("(")+1);
+booking = booking.substr(0, booking.indexOf(")"));
+booking = booking.split(" ");
+
+MRP = $("div.label:contains('Doctor:')").next().children().val().split(" ")[0];
+MRP = MRP.replace(",", '');
+MRP = MRP.replace(" ", '');
+
+if(MRP.length > 0){
+  contains=false;
+
+  for(i=0; i<booking.length; i++){
+   if(booking[i] == MRP){
+     contains=true;
+     break;
+   }
+  }
+
+  if(!contains){
+
+    alert("ALERT: MRP Mismatch");
+    /*
+    var match = document.createElement("div");
+
+    match.id="jq_match";
+    match.style="background: yellow; padding: 8px; margin: 8px; border: 2px groove; font-size: 1.5em; color: red; text-align: center";
+    match.innerHTML="ALERT: MRP Mismatch";
+    site = $("div.label:contains('Doctor:')").next();
+    site=document.body;
+    site = $("#groupButton").parent();
+    site.prepend(match);
+
+  }
+  else{
+    $("#jq_match").remove();
+    */
+  }
+}
+
+appointment = $("th:contains('Appointment Overview')").parent().parent();
+a = appointment.children();
+if((a.length)>2){ // appointments listed
+  n = a.next().next().children().html();
+//  alert(n);
+  n = n.split('-');
+  d = new Date();
+  d.setFullYear(n[0]);
+  d.setMonth(n[1]-1);
+  d.setDate(n[2]);
+
+ 
+ 
+  if(d){
+//alert(d);
+    now_date = $('input[name ="appointment_date"]').val();
+    now_date = now_date.split('-');
+    now = new Date(); // the date we are setting the appointment
+    now.setFullYear(now_date[0]);
+    now.setMonth(now_date[1]-1);
+    now.setDate(now_date[2]);
+    now.setHours(0);
+    //alert(now);
+    then = new Date();
+ then.setTime(now.getTime() + 14*24*60*60*1000); // two weeks from the appointment date
+    //alert(then);
+  if(d < then && d >= now){
+    alert("Patient has appointment in the next two weeks");
+    }
+  }
+ 
+
+}
